@@ -12,13 +12,24 @@ import (
 )
 
 func main() {
-	fmt.Printf("Are variable verified? %s", verifyEnvVariables())
+	fmt.Printf("Are variable verified? %s\n", verifyEnvVariables())
 	
 	sess := session.Must(session.NewSession())
 
 	svc := elasticache.New(sess, aws.NewConfig().WithRegion("eu-west-1"))
 
-	fmt.Printf("svc is %", svc.ClientInfo)
+	input := &elasticache.DescribeCacheClustersInput{
+		CacheClusterId: aws.String("potato-cluster"),
+		ShowCacheNodeInfo: aws.Bool(true),
+	}
+
+	result, err := svc.DescribeCacheClusters(input)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	for _, cluster_node := range result.CacheClusters[0].CacheNodes {
+		fmt.Printf("%v:%v\n", *result.CacheClusters[0].CacheClusterId, *cluster_node.CacheNodeId)
+	}
 
 }
 
