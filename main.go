@@ -28,6 +28,18 @@ func main() {
 		fmt.Println(err.Error())
 	}
 	for _, cluster_node := range result.CacheClusters[0].CacheNodes {
+		reboot_input := &elasticache.RebootCacheClusterInput{
+			CacheClusterId: aws.String(*result.CacheClusters[0].CacheClusterId),
+			CacheNodeIdsToReboot: []*string{cluster_node.CacheNodeId},
+
+		}
+		reboot_result, err := svc.RebootCacheCluster(reboot_input)
+
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+		fmt.Println(reboot_result)
+
 		fmt.Printf("%v:%v\n", *result.CacheClusters[0].CacheClusterId, *cluster_node.CacheNodeId)
 	}
 
